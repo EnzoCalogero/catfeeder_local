@@ -101,10 +101,10 @@ def monitor(val, last, eaten, given):
     #print(delta)
     
     if (abs(delta) > 0): # filter for the noise...
-        if (delta > 2):
+        if (delta > 2) and (delta <50):
             given = given + delta
             print(given)
-        elif (delta < 1):
+        elif (delta < -1):
             eaten = eaten - delta
         update_FS()
     return (eaten, given)
@@ -186,7 +186,7 @@ while True:
         lcd.lcd_display_string("Current {} gr".format(val), 1)
         lcd.lcd_display_string("Give {} Eat {}".format(given, abs(eaten)), 2)
        
-        time.sleep(10)
+        time.sleep(60)
         last = val
     except (KeyboardInterrupt, SystemExit):
         cleanAndExit()
