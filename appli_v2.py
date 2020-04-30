@@ -29,12 +29,11 @@ referenceUnit = 1
 # ubidots configurations
 TOKEN =  config["default"]['ubidots']
 print("ubidots {}".format(TOKEN))
-DEVICE_LABEL = "Rasp_Cat"
+DEVICE_LABEL = "rasp_cat"
 
 VARIABLE_LABEL_1 = "bowel"  # Put your first variable label here
 VARIABLE_LABEL_2 = "given"  # Put your second variable label here
 VARIABLE_LABEL_3 = "eaten"  # Put your second variable label here
-
 
 flag = datetime.datetime.now().strftime("%Y_%m_%d") # counter for today
 
@@ -98,7 +97,6 @@ def cleanAndExit():
 
 def monitor(val, last, eaten, given):
     delta = val - last
-    #print(delta)
     
     if (abs(delta) > 0): # filter for the noise...
         if (delta > 2) and (delta <50):
@@ -133,7 +131,6 @@ def update_FS():
 hx = HX711(5, 6)
 hx.set_reading_format("MSB", "MSB")
 hx.set_reference_unit(referenceUnit)
-
 hx.reset()
 
 lcd = lcddriver.lcd()
@@ -149,13 +146,14 @@ while True:
         for i in range(iterator):
              val_ = hx.get_weight(5)
              val_row.append(val_)
-             # print(i)
-             # print(val_)
-             # print(val_row)
+             val_ = int(round(((val_/ 1223.5)-1000)/.786)) 
+             val_ = max(0, val_)
+             lcd.lcd_display_string("Current             ", 1)
+             lcd.lcd_display_string("Current {} gr".format(val_), 1)
              time.sleep(2)
         val = statistics.median(val_row)
 
-        val = int(round(((val/ 1223.5)-1000)/.786))  #844.5 +123 int()
+        val = int(round(((val/ 1223.5)-1000)/.786)) 
         val = max(0, val)
         
         print(val)
@@ -164,7 +162,6 @@ while True:
         if counter < 1:
             f = urllib2.urlopen(baseURL +
                             "&field1=%s&field2=%s&field3=%s" % (val, abs(eaten), given))
-       
             f.read()
             print("f: {}",format(f))
             f.close()
